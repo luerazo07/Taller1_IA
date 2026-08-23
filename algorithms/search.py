@@ -36,8 +36,54 @@ def breadthFirstSearch(problem: SearchProblem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    # TODO: Add your code here
+    """
+    Version inicial del codigo
+    def breadthFirstSearch(problem: SearchProblem):
+    nodo = problem.getStartState()
+    if problem.isGoalState(nodo): return nodo
+    fromtera = utils.Queue()
+    fromtera.push(nodo)
+    alcanzados = set()
+    alcanzados.add(nodo)
+    while fromtera.isEmpty() == False:
+        nodo = fromtera.pop()  
+        for sucesor in problem.getSuccessors(nodo):
+            s = sucesor.getState()
+            if problem.isGoalState(s): return sucesor 
+            if s not in alcanzados:
+                alcanzados.add(s)
+                fromtera.push(s, sucesor.getActions())  
+
     utils.raiseNotDefined()
+
+    Mi version inicial del codigo esta basada en el pseudocodigo proporcionado en clase.
+
+
+    """
+def breadthFirstSearch(problem: SearchProblem):
+
+    estadoInicial = problem.getStartState()
+    if problem.isGoalState(estadoInicial):
+        return []
+
+    frontera = utils.Queue()
+    frontera.push((estadoInicial, []))
+
+    alcanzados = set()
+    alcanzados.add(estadoInicial)
+
+    while not frontera.isEmpty():
+        nodo, acciones = frontera.pop()
+        for sucesor in problem.getSuccessors(nodo):
+            s, action, stepCost = sucesor
+            if s not in alcanzados:
+                nuevasAcciones = acciones + [action]
+                if problem.isGoalState(s):
+                    return nuevasAcciones
+                alcanzados.add(s)
+                frontera.push((s, nuevasAcciones))
+
+    return []  # no se encontró solución
 
 
 def uniformCostSearch(problem: SearchProblem):
