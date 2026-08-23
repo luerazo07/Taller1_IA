@@ -45,7 +45,6 @@ def uniformCostSearch(problem: SearchProblem):
     Search the node of least total cost first.
     """
     """
-    // Codigo inicial resultante de mi traducción propia del pseudocodigo que vimos en clase:
     
     estado = problem.getStartState()
     acciones = []
