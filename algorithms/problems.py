@@ -234,16 +234,23 @@ class ModuleRepairProblem(SearchProblem):
         """
         Returns True if the robot reached C after picking up M.
         """
-        # TODO: Add your code here
-        utils.raiseNotDefined()
+        posicion, hasModule = state
+        if self.controlPosition == posicion and hasModule:
+            return True
+        else:
+            return False
 
     def _getStepCost(self, nextPosition, hasModule):
         """
         Returns the movement cost for entering nextPosition.
 
         """
-        # TODO: Add your code here
-        utils.raiseNotDefined()
+        x,y = nextPosition
+        cost = self.startingMissionState.getTerrainCost(x,y)
+        if hasModule:
+            cost = cost*2
+        return cost
+       
 
     def getSuccessors(self, state):
         """
@@ -266,11 +273,75 @@ class ModuleRepairProblem(SearchProblem):
         - The movement used to enter M still has normal terrain cost.
         """
 
+        """ 
+        successors = []
+                self._expanded += 1
+                position, hasModule = state
+                directions = [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]
+                for direction in directions:
+                    x, y = position
+                    dx, dy = Actions.directionToVector(direction)
+                    nextPosicion = (x + int(dx), y + int(dy))
+                    if not self.walls[nextPosicion[0]][nextPosicion[1]]:
+                        nextHasModule = None
+                        stepCost = self._getStepCost(nextPosicion, hasModule)
+                        successors.append(( (nextPosicion, nextHasModule), direction, stepCost))
+                return successors
+                
+        // Este de aqui fue mi codigo inicial para esta función, la parte que me estaba fallando un poco era la logica de al realizar el movimiento, asi mismo trasladar el estado
+        de si ya habia recogido el modulo o no, es por esto que le pedi ayuda a Claude para que me orientara un poco en esta parte con el siguiente promt:
+        
+        Tengo este codigo, pero no comprendo del todo como puedo pasar la info de si tiene o no el modulo al momento de realizar el movimiento, me podrias orientar sin darme el codigo explicitamente
+        
+        
+        La respuesta de Claude fue la siguiente:
+        
+        Dale, vamos a pensarlo desde cero, con calma, sin código todavía.
+
+        ## Lo que ya tienes disponible en ese punto del `for`
+
+        Justo antes de la línea `nextHasModule = None`, ya tienes dos datos que te interesan:
+
+        1. **`hasModule`** — lo desempacaste al inicio, de `state`. Este valor representa: *"¿el robot ya cargaba el módulo antes de dar este paso?"*
+        2. **`nextPosicion`** — lo acabas de calcular en este mismo `for`, es la celda a la que se está moviendo el robot en este movimiento específico.
+
+        Y también tienes guardado en el objeto, desde el `__init__`:
+
+        3. **`self.modulePosition`** — la celda exacta del mapa donde está `M`.
+
+        ## La pregunta que tienes que responder con esos tres datos
+
+        "¿El robot, al llegar a `nextPosicion`, debería tener el módulo?"
+
+        Hazte estas dos sub-preguntas por separado, una a la vez:
+
+        **Pregunta A:** Si `hasModule` ya era `True` (o sea, el robot venía cargándolo desde antes), ¿tiene sentido que lo "pierda" solo por moverse a otra celda? ¿O debería seguir siendo `True` sin importar a dónde se mueva?
+
+        **Pregunta B:** Si `hasModule` era `False` (no lo tenía), pero resulta que `nextPosicion` es exactamente la misma celda que `self.modulePosition` — ¿qué debería pasar con `nextHasModule` en ese caso?
+
+        ## Cómo combinar las dos respuestas
+
+        Una vez tengas clara la respuesta a A y a B por separado, la pregunta final es: ¿cómo expresarías en una sola línea "esto es verdadero si la Pregunta A se cumple, **o** si la Pregunta B se cumple"? Piensa en qué palabra de Python conecta dos condiciones donde basta con que **una sola** sea verdadera para que el resultado completo sea verdadero (no necesitas que las dos se cumplan a la vez, con que se cumpla al menos una ya es suficiente).
+
+        ¿Cómo responderías las preguntas A y B con tus propias palabras? Y a partir de ahí, ¿qué expresión armarías para reemplazar el `None`?
+                
+        """
+        
+        
         successors = []
         self._expanded += 1
-        # TODO: Add your code here
-
+        position, hasModule = state
+        directions = [Directions.NORTH, Directions.SOUTH, Directions.EAST, Directions.WEST]
+        for direction in directions:
+            x, y = position
+            dx, dy = Actions.directionToVector(direction)
+            nextPosicion = (x + int(dx), y + int(dy))
+            if not self.walls[nextPosicion[0]][nextPosicion[1]]:
+                nextHasModule = hasModule or nextPosicion == self.modulePosition
+                stepCost = self._getStepCost(nextPosicion, hasModule)
+                successors.append(( (nextPosicion, nextHasModule), direction, stepCost))
         return successors
+            
 
     def getCostOfActions(self, actions):
         """
