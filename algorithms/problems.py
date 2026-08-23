@@ -324,6 +324,9 @@ class ModuleRepairProblem(SearchProblem):
         Una vez tengas clara la respuesta a A y a B por separado, la pregunta final es: ¿cómo expresarías en una sola línea "esto es verdadero si la Pregunta A se cumple, **o** si la Pregunta B se cumple"? Piensa en qué palabra de Python conecta dos condiciones donde basta con que **una sola** sea verdadera para que el resultado completo sea verdadero (no necesitas que las dos se cumplan a la vez, con que se cumpla al menos una ya es suficiente).
 
         ¿Cómo responderías las preguntas A y B con tus propias palabras? Y a partir de ahí, ¿qué expresión armarías para reemplazar el `None`?
+        
+        //en base a dichas recomendaciones y orientaciones de claude, reemplace la linea de codigo que estaba en None con un or tomando el valor de hasmodule anterior
+        o mirando si la posicion siguiente es igual a la del modulo, si ninguna se cumplia hasmodule seguia en false hasta que encontrara el modulo.
                 
         """
         
