@@ -21,7 +21,18 @@ def manhattanHeuristic(state, problem):
     - the nearest pending T if the robot has the kit and systems remain.
     - C if all systems have been repaired.
     """
-    # TODO: Add your code here
+    position=state[0]
+    if state[1]==False and state[2]:
+        kposition=problem.kitPosition
+        d=abs(position[0]-kposition[0])+abs(position[1]-kposition[1])
+    elif state[1]==True and state[2]:
+        tposition=problem.systemPositions[0]
+        d=abs(position[0]-tposition[0])+abs(position[1]-tposition[1])
+        
+    elif not state[2]:
+        cposition=problem.controlPosition
+        d=abs(position[0]-cposition[0])+abs(position[1]-cposition[1])
+        
     utils.raiseNotDefined()
 
 
