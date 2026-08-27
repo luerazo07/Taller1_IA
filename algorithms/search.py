@@ -236,6 +236,125 @@ def aStarSearch(problem: SearchProblem, heuristic=nullHeuristic):
     """
     Search the node that has the lowest combined cost and heuristic first.
     """
+    """
+    Este era mi código inicial
+    
+    estado = problem.getStartState() 
+    acciones = [] 
+    costo = 0 
+    nodo = (estado, acciones, costo) 
+    
+    if problem.isGoalState( nodo[0]) == True: 
+        return acciones frontera = utils.PriorityQueue() 
+        
+    frontera.push(nodo,costo+heuristic) 
+    alcanzados = {} 
+    alcanzados[estado] = nodo 
+    
+    while not frontera.isEmpty(): 
+        nodo=frontera.pop() 
+        if problem.isGoalState( nodo.estado) == True: 
+            return nodo problem.getSuccessors(nodo[0])
+            
+    ----------------
+    estado = problem.getStartState() 
+    acciones = [] 
+    costo = 0 
+    nodo = (estado, acciones, costo) 
+    
+    if problem.isGoalState( nodo[0]) == True: 
+        return acciones 
+        
+    frontera = utils.PriorityQueue() 
+    frontera.push(nodo,costo+heuristic) 
+    alcanzados = {} 
+    alcanzados[estado] = nodo
+     
+    while not frontera.isEmpty(): 
+        nodo_frontera=frontera.pop() 
+        if problem.isGoalState( nodo_frontera[0]) == True:
+            return nodo_frontera[1] 
+        siguientes=problem.getSuccessors(nodo_frontera[0]) 
+        
+        for i in siguientes: 
+            sucesor,accion, ncosto = i 
+            nuevasAcciones = nodo_frontera[1] + [accion] 
+            nuevoCosto = nodo_frontera[2] + ncosto 
+            hijo = (sucesor, nuevasAcciones, nuevoCosto) 
+            
+            if sucesor not in alcanzados or (sucesor in alcanzados and nuevoCosto<alcanzados[sucesor][costo]): 
+                alcanzados[sucesor]=hijo 
+                nuevah=heuristic(sucesor, problem) 
+                frontera.push(hijo,costo+heuristic)
+                
+    Se lo mandé a ChatGPT para saber si estaba correcto y me respondió esto:
+    1. Esta línea está mal
+    frontera.push(nodo, costo + heuristic)
+
+    Por qué: heuristic es una función, no un número
+    Tienes:
+
+    costo = 0
+    heuristic = una función
+
+    y no puedes hacer:
+
+    número + función
+
+    Necesitas ejecutar la heurística sobre el problema y el estado para obtener el valor h.
+
+    Recuerda:
+
+    f = g + h
+    
+    2. Esta parte está mal
+    alcanzados[sucesor][costo]
+
+    alcanzados[sucesor] te devuelve el nodo guardado:
+
+    (estado, acciones, costo)
+
+    Pero costo es una variable que vale 0, no el índice que quieres usar.
+
+    Recuerda tu estructura:
+
+    hijo = (sucesor, nuevasAcciones, nuevoCosto)
+            [0]          [1]              [2]
+
+    Por lo tanto, para obtener el costo del nodo que ya estaba guardado en alcanzados, tienes que usar la posición correspondiente al costo.
+
+    Tu comparación conceptualmente debe ser:
+
+    nuevoCosto < costo_del_nodo_que_ya_estaba_guardado
+    
+    3. Esta línea también está mal
+    frontera.push(hijo,costo+h)
+
+    Porque costo y h son los valores que calculaste para el nodo inicial.
+
+    Para cada hijo tienes que calcular su propio:
+
+    g = nuevoCosto
+    h = heurística del estado del hijo
+    f = g + h
+
+    Es decir, no puedes reutilizar el costo y h del inicio.
+
+    Piensa:
+
+    nodo_frontera
+       ↓
+    nuevo hijo
+        ↓
+    nuevoCosto       ← g del hijo
+    heuristic(...)   ← h del hijo
+       ↓
+    g + h             ← prioridad del hijo
+    
+    Ahí vi que partes de la estructura estaba pensando mal, porque y cual era la forma correcta de ver 
+    el problema, entonces realicé los cambios que me dijo y le volví a mandar el código
+    para comprobar que estuviera bien.
+    """
     estado = problem.getStartState()
     acciones = []
     costo = 0
