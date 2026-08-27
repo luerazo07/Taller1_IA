@@ -186,6 +186,61 @@ def systemRepairHeuristic(
     - Consider the kit, pending systems, and the final return to control center
     - Balance heuristic strength vs. computation time (do experiments!)
     """
+    """
+    Cree el código con distancia Manhattan porque al contar movimientos horizontales y venticales
+    da un resultado más realista. Además decidí usar un árbol MST porque permite considerar 
+    al mismo tiempo los sistemas T pendientes y el centro de control al contruir conexiones entre
+    esos puntos y calcular el costo minimo. De este modo la heurística tiene en cuenta todo lo que 
+    falta por visitar y no solo el sistema más cercano.
+    
+    Mi código inicial era este
+    
+    position, hasKit, pendingSystems = state
+
+    if problem.isGoalState(state):
+        return 0
+
+    if not hasKit:
+        distanciaAlKit = _manhattanDistance(position,problem.kitPosition)
+        puntos = [problem.kitPosition]
+        for sistema in pendingSystems:
+            puntos.append(sistema)
+        puntos.append(problem.controlPosition)
+        costoMST = _mstCost(puntos)
+        return distanciaAlKit + costoMST
+
+    if pendingSystems:
+        puntos = [position]
+        for sistema in pendingSystems:
+            puntos.append(sistema)
+        puntos.append(problem.controlPosition)
+        return _mstCost(puntos)
+
+    return _manhattanDistance(position,problem.controlPosition)
+    
+    Se lo mandé a ChatGPT y le preguntó como hacer para que también cumpliera con esta parte de la documentación:
+    -Use problem.heuristicInfo to cache expensive computations
+    
+    Me respondió lo siguiente: 
+    La razón es que A* puede llamar muchas veces a systemRepairHeuristic para estados diferentes, y calcular un MST cada vez puede ser costoso.
+    La idea sería guardar resultados ya calculados en:
+    problem.heuristicInfo
+    Para usarlo tiene que implemnetar este código: 
+    # Crear una clave única para este estado
+    key = (position, hasKit, pendingSystems)
+
+    # Revisar si ya calculamos esta heurística
+    if key in problem.heuristicInfo:
+        return problem.heuristicInfo[key]
+        
+    Y al final del código:
+    # Guardamos el resultado para no calcularlo otra vez
+    problem.heuristicInfo[key] = resultado
+    
+    Con esto también me sugirió no poner return en cada condicional sino guardar el resultado en una
+    variable y retornarla al final del código.
+    """
+    
     position, hasKit, pendingSystems = state
 
     if problem.isGoalState(state):
@@ -213,7 +268,7 @@ def systemRepairHeuristic(
         resultado= _mstCost(puntos)
     else:
         resultado= _manhattanDistance(position,problem.controlPosition)
-    resultado= problem.heuristicInfo[key]
+    problem.heuristicInfo[key]=resultado
     
     return resultado
     utils.raiseNotDefined()
