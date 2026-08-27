@@ -140,6 +140,34 @@ def euclideanHeuristic(state, problem):
             
     utils.raiseNotDefined()
 
+def _manhattanDistance(pos1, pos2):
+    return (abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1]))
+
+def _mstCost(positions):
+    """
+    Calcula el MST usando la distancia Manhattan entre las posiciones.
+    """
+
+    if len(positions) <= 1:
+        return 0
+
+    visitados = {positions[0]}
+    costo = 0
+
+    while len(visitados) < len(positions):
+        distanciaMinima = float("inf")
+        puntoElegido = None
+        for punto in visitados:
+            for otro in positions:
+                if otro not in visitados:
+                    distancia = _manhattanDistance(punto,otro)
+                    if distancia < distanciaMinima:
+                        distanciaMinima = distancia
+                        puntoElegido = otro
+        costo += distanciaMinima
+        visitados.add(puntoElegido)
+
+    return costo
 
 def systemRepairHeuristic(
     state: Tuple[Tuple, bool, Tuple], problem: SystemRepairProblem
@@ -158,5 +186,34 @@ def systemRepairHeuristic(
     - Consider the kit, pending systems, and the final return to control center
     - Balance heuristic strength vs. computation time (do experiments!)
     """
-    # TODO: Add your code here
+    position, hasKit, pendingSystems = state
+
+    if problem.isGoalState(state):
+        return 0
+    
+    key = (position, hasKit, pendingSystems)
+
+    if key in problem.heuristicInfo:
+        return problem.heuristicInfo[key]
+    
+    if not hasKit:
+        distanciaAlKit = _manhattanDistance(position,problem.kitPosition)
+        puntos = [problem.kitPosition]
+        for sistema in pendingSystems:
+            puntos.append(sistema)
+        puntos.append(problem.controlPosition)
+        costoMST = _mstCost(puntos)
+        resultado= distanciaAlKit + costoMST
+
+    elif pendingSystems:
+        puntos = [position]
+        for sistema in pendingSystems:
+            puntos.append(sistema)
+        puntos.append(problem.controlPosition)
+        resultado= _mstCost(puntos)
+    else:
+        resultado= _manhattanDistance(position,problem.controlPosition)
+    resultado= problem.heuristicInfo[key]
+    
+    return resultado
     utils.raiseNotDefined()
