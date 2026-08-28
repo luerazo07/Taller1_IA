@@ -28,8 +28,27 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    # TODO: Add your code here
-    utils.raiseNotDefined()
+    empezamo= problem.getStartState()
+    if problem.isGoalState(empezamo):
+        return []
+    sino =utils.Stack()
+    sino.push((empezamo, []))
+    vecinos= []
+    while not sino.isEmpty():
+        actual, pepe = sino.pop()
+        if actual in vecinos:
+            continue
+        vecinos.append(actual)
+        if problem.isGoalState(actual):
+            return pepe
+        for a, b, c in problem.getSuccessors(actual):
+            if a not in vecinos:
+                guardar = [b]
+                sino.push((a, guardar))
+                
+    return []
+                
+        
 
 
 def breadthFirstSearch(problem: SearchProblem):
