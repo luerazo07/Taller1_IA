@@ -28,6 +28,7 @@ def depthFirstSearch(problem: SearchProblem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
+    """""
     empezamo= problem.getStartState()
     if problem.isGoalState(empezamo):
         return []
@@ -43,12 +44,68 @@ def depthFirstSearch(problem: SearchProblem):
             return pepe
         for a, b, c in problem.getSuccessors(actual):
             if a not in vecinos:
-                guardar = [b]
+                guardar =[b]
                 sino.push((a, guardar))
                 
     return []
-                
-        
+    
+    Este fue mi primer intento de implementar el algoritmo de tipo dfs,
+    el algoritmo en general esta bien diseñado y hecho de manera simple
+    primero empieza despues revisa si lo que se busca esta de primeras 
+    sino lo esta entonces crea una nueva variable la cual usa stack seguido
+    a esto se le agrega una lista y el primer dato que se reviso despues 
+    mantiene una lista de vecinos osea estados que ya visito, mientras el sino
+    tenga elementos, el while revisa los elementos de sino y obtiene el 
+    elemento actual y pepe que seria el camino que se ha recorrido,
+    se verifica si el actual ya esta en vecinos, sino se agrega , si
+    el actual es la meta entonces retorno pepe osea el recorrido, 
+    por ultimo hago un for el cual usa .problem.getSuccessors(actual), 
+    este pide sucesor,accion costo pero como no necesitamos costo lo ignoramos,
+    despues se realiza una verificacion si a no esta en vecinos entonces 
+    se guarda en una lista y se hace push a sino de esta manera meto el nuevo estado y su camino 
+    a la stack para seguir profundizando.
+    Tuve un pequeño error y es que no estaba guardando el camino completo, osea
+    reseteaba el camino cada vez que probaba un nuevo sucesor, entonces el programa nunca
+    llegaba a la meta, por lo que le pregunte a chat: bro empezamo= problem.getStartState() 
+    if problem.isGoalState(empezamo): return [] sino =utils.Stack() sino.push((empezamo, [])) 
+    vecinos= [] while not sino.isEmpty(): actual, pepe = sino.pop() if actual in vecinos: 
+    continue vecinos.append(actual) if problem.isGoalState(actual): return pepe for a, b, c in
+    problem.getSuccessors(actual): if a not in vecinos: guardar = [b] sino.push((a, guardar)) 
+    return [] porque se traba. a lo que chat respondio 
+    Bro, ya vi el problema 😭. No es que el while esté infinito necesariamente: estás perdiendo el camino cada vez que avanzas.
+
+    El culpable es este pedazo:
+
+    guardar = [b]
+    sino.push((a, guardar))
+
+    Ahí estás diciendo: “para llegar al sucesor a, el camino es solamente [b]”.
+
+    Pero pepe ya contiene el camino que hiciste para llegar a actual. Entonces debería ser:
+
+    guardar = pepe + [b]
+    sino.push((a, guardar))
+    -En base a lo que me dijo chat hice el ajuste y ya quedo funcionando
+    """
+    empezamo= problem.getStartState()
+    if problem.isGoalState(empezamo):
+        return []
+    sino =utils.Stack()
+    sino.push((empezamo, []))
+    vecinos= []
+    while not sino.isEmpty():
+            actual, pepe = sino.pop()
+            if actual in vecinos:
+                continue
+            vecinos.append(actual)
+            if problem.isGoalState(actual):
+                return pepe
+            for a, b, c in problem.getSuccessors(actual):
+                if a not in vecinos:
+                    guardar = pepe + [b]
+                    sino.push((a, guardar))
+                    
+    return []
 
 
 def breadthFirstSearch(problem: SearchProblem):
