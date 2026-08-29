@@ -111,10 +111,17 @@ def depthFirstSearch(problem: SearchProblem):
 def breadthFirstSearch(problem: SearchProblem):
     """
     Search the shallowest nodes in the search tree first.
-    """
-    """
-    Version inicial del codigo
-    def breadthFirstSearch(problem: SearchProblem):
+    Este fue mi primer intento de implementar BFS, basado en el pseudocódigo
+    proporcionado en clase. 
+
+    La idea general del problema se usa una cola como frontera
+    pues en BFS quiero explorar los estados en el mismo orden en que los voy descubriendo.
+    Empiezo sacando el estado inicial y si ya es meta retorno de una.
+    Si no es la meta, creo la frontera tipo cola, marco el estado inicial como alcanzado y 
+    entro a un ciclo donde hago los siguientes pasos EN ORDEN:
+    - saco un nodo de la frontera
+    - reviso sus sucesores( y si un sucesor no ha sido visitado lo agrego a alcanzados y lo agrego a la frontera)
+
     nodo = problem.getStartState()
     if problem.isGoalState(nodo): return nodo
     fromtera = utils.Queue()
@@ -129,12 +136,27 @@ def breadthFirstSearch(problem: SearchProblem):
             if s not in alcanzados:
                 alcanzados.add(s)
                 fromtera.push(s, sucesor.getActions())  
-
     utils.raiseNotDefined()
 
-    Mi version inicial del codigo esta basada en el pseudocodigo proporcionado en clase.
+    El programa no corría. Le mostré este código a Claude :
 
+    promt = mira mi primera aproximacion a BFS y adjunte/pegué el código de arriba
 
+    Claude identificó 5 errores críticos
+    Primero, que Queue.push solo acepta un argumento (estado, acciones)
+       en una sola tupla, no pasarlos como dos parámetros separados.
+    Segundo, getSuccessors no retorna objetos con .getState()/.getActions(); retorna
+       tuplas planas (nextState, action, stepCost) que hay que desempacar.
+    Tercero Las acciones nunca se acumulaban a lo largo del camino — faltaba ir
+       concatenando acciones + [action] en cada paso.
+    Cuarto, La función debía retornar la lista de acciones acumuladas, no el estado
+       (nodo) ni la tupla completa del sucesor.
+    Por último, El estado inicial no quedaba correctamente protegido contra ciclos por
+       cómo estaba estructurado el resto del código.
+
+    Después le pedí que me explicara línea por línea cada corrección, para
+    asegurarme de entenderlo y no solo copiarlo. Con esas correcciones
+    reescribí la función a la versión final de abajo.
     """
 def breadthFirstSearch(problem: SearchProblem):
 
@@ -159,7 +181,7 @@ def breadthFirstSearch(problem: SearchProblem):
                 alcanzados.add(s)
                 frontera.push((s, nuevasAcciones))
 
-    return []  # no se encontró solución
+    return []  
 
 
 def uniformCostSearch(problem: SearchProblem):
